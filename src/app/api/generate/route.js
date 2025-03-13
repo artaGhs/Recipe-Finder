@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import {dotnev} from 'dotnev'
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-dotnev.config();
 
 
 
