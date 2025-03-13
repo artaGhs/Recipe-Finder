@@ -22,7 +22,7 @@ export default function Recipe() {
     event.preventDefault();
     
     try {
-      const response = await fetch('/api/generateRecipes', {
+      const response = await fetch('/api/generate/route', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
