@@ -1,16 +1,12 @@
-import { NextResponse } from 'next/server';
+// app/api/generateRecipes/route.js
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextResponse } from "next/server";
 
-
-
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+export async function POST(request) {
   try {
-    const { ingredients, flexibility } = req.body;
+    // Parse the request body
+    const { ingredients, flexibility } = await request.json();
     
     // Initialize the Gemini API with your server-side API key
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -36,7 +32,7 @@ export default async function handler(req, res) {
     const response = await result.response;
     const text = response.text();
     
-    // Clean the output similarly to how you did on client side
+    // Clean the output
     let cleanedOutput = text.trim();
     if (cleanedOutput.startsWith('```json')) {
       cleanedOutput = cleanedOutput.substring(cleanedOutput.indexOf('\n') + 1);
@@ -47,10 +43,10 @@ export default async function handler(req, res) {
     
     // Parse and return the JSON
     const jsonObject = JSON.parse(cleanedOutput);
-    return res.status(200).json(jsonObject);
+    return NextResponse.json(jsonObject);
     
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    return res.status(500).json({ error: "Failed to generate recipes" });
+    return NextResponse.json({ error: "Failed to generate recipes" }, { status: 500 });
   }
 }
