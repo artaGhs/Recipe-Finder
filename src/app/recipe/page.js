@@ -5,33 +5,8 @@ import RecipesFound from "../components/RecipesFound";
 import Link from "next/link";
 import ModelViewer from "../components/ModelViewer";
 import { useState, useEffect } from "react";
-import dotenv from "dotenv";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import sample from "../sample.json"
 
-dotenv.config();
-
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_API_KEY)
-
-
-
-
-async function run(prmpt) {
-  
-
-  console.log("gemini",process.env.NEXT_PUBLIC_API_KEY)
-  const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-  });
-  
-  const prompt = prmpt;
-  
-  
-  const result = await model.generateContent(prompt);
-
-
-  return result.response.text();
-}
 
 
 
@@ -43,51 +18,31 @@ export default function Recipe() {
   const [flexibility , setFlexibility] = useState(0);
 
   const handleSubmit = async (event) => {
-    setIsLoading(true);
     event.preventDefault();
-
-
-    const prmpt = `You are a professional chef, based on the user's ingredients, 
-    find the best recipes, the input also includes a flexibilty % which means how 
-    much new ingredients you can use. if 0%, you can only use the ingredients listed,
-    if 100% you can have a decent amount of variance. if there is no recpice found or
-    the input is not an actual ingredient, return "No recipes found based on the current restrictions:(". 
-    You can consider that the user already has basic ingredients such as water, sugar, salt, etc. However if the flexibility is 0, don't assume that 
-    the user has those ingredients!
-    GIVE NO MORE THAN 15 RECIPES!
-    YOUR OUTPUT SHOULD BE IN JSON FORMAT:
-    Recipe = {'recipeName': string,'description': string, 'ingredients' : Array of strings, 'instructions' : string, 'servingSize' : string (ONLY IN APPROPRIATE UNITS, e.g 1 tblspoon,20 grams, 1 slice (for pizza)), 'caloriesPerServing': int}
-    Return: Array<Recipe>
-    USER INPUT{
-      Ingredients: ${ingredients} / 
-      Flexibility: ${flexibility}
-    }
-    `
-    const geminiOutput = await run(prmpt);
-  
-    let cleanedOutput = geminiOutput.trim();
-    if (cleanedOutput.startsWith('```json')) {
-      // Remove the starting markdown code fence
-      cleanedOutput = cleanedOutput.substring(cleanedOutput.indexOf('\n') + 1);
-    }
-    if (cleanedOutput.endsWith('```')) {
-      // Remove the ending markdown code fence
-      cleanedOutput = cleanedOutput.substring(0, cleanedOutput.lastIndexOf('```')).trim();
-    }
+    setIsLoading(true);
 
     try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ingredients, flexibility })
+      });
+      const data = await response.json();
+      
+      let cleanedOutput = data.result.trim();
+      if (cleanedOutput.startsWith('```json')) {
+        cleanedOutput = cleanedOutput.substring(cleanedOutput.indexOf('\n') + 1);
+      }
+      if (cleanedOutput.endsWith('```')) {
+        cleanedOutput = cleanedOutput.substring(0, cleanedOutput.lastIndexOf('```')).trim();
+      }
+      
       const jsonObject = JSON.parse(cleanedOutput);
-      console.log(jsonObject,"jsoooooon");
-      console.log(typeof jsonObject);
-      setIsLoading(false);
       setResp(jsonObject);
-
     } catch (error) {
-      console.error("Error parsing JSON:", error);
+      console.error("Error generating recipe:", error);
     }
-    
-    
-    console.log(resp,"response")
+    setIsLoading(false);
     console.log("Form submitted");
     console.log(ingredients);
     console.log(flexibility);
