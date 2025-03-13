@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
+
 
 @theme inline {
   --color-background: var(--background);
@@ -14,13 +16,31 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0f181b;
     --foreground: #ededed;
   }
 }
 
+.montserrat-Mont {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+}
+
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Montserrat',Arial, Helvetica, sans-serif;
+  
+}
+
+html, body {
+  overscroll-behavior-y: none;
+  overscroll-behavior-x: none;
+}
+
+@media only screen and (max-width: 600px) {
+  html, body {
+    overscroll-behavior-y: auto;
+  }
 }

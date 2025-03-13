@@ -1,0 +1,10 @@
+[
+  {
+    "recipeName": "Waiting for ingredients",
+    "description": "description.",
+    "ingredients": ["Water", "Ice"],
+    "instructions": "In a bowl, mix water and ice",
+    "servingSize": "2 cups",
+    "caloriesPerServing":0
+  }
+]
