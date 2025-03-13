@@ -18,31 +18,34 @@ export default function Recipe() {
   const [flexibility , setFlexibility] = useState(0);
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
     setIsLoading(true);
-
+    event.preventDefault();
+    
     try {
-      const response = await fetch('/api/generate', {
+      const response = await fetch('/api/generateRecipes', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredients, flexibility })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ingredients,
+          flexibility
+        }),
       });
-      const data = await response.json();
       
-      let cleanedOutput = data.result.trim();
-      if (cleanedOutput.startsWith('```json')) {
-        cleanedOutput = cleanedOutput.substring(cleanedOutput.indexOf('\n') + 1);
-      }
-      if (cleanedOutput.endsWith('```')) {
-        cleanedOutput = cleanedOutput.substring(0, cleanedOutput.lastIndexOf('```')).trim();
+      if (!response.ok) {
+        throw new Error('Failed to fetch recipes');
       }
       
-      const jsonObject = JSON.parse(cleanedOutput);
+      const jsonObject = await response.json();
+      console.log(jsonObject, "jsoooooon");
       setResp(jsonObject);
     } catch (error) {
-      console.error("Error generating recipe:", error);
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
+    
     console.log("Form submitted");
     console.log(ingredients);
     console.log(flexibility);
