@@ -1,4 +1,4 @@
-// src/app/api/GenerateContent/route.js
+
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 
@@ -13,7 +13,7 @@ export async function POST(request) {
     
     // Get the model
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash",
     });
     // Format the prompt with the provided ingredients and flexibility
     const formattedPrompt = `You are a professional chef, based on the user's ingredients, 
