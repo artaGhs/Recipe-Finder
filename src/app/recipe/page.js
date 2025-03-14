@@ -16,13 +16,14 @@ export default function Recipe() {
 
   const [ingredients, setIngredients] = useState('');
   const [flexibility , setFlexibility] = useState(0);
-
-  const handleSubmit = async (event) => {
+  
+  // Example client-side code to call this endpoint
+  async function generateContent( ingredients, flexibility) {
     setIsLoading(true);
-    event.preventDefault();
     
     try {
-      const response = await fetch('/api/generateRecipes', {
+      console.log("testintttt")
+      const response = await fetch('/api/generateContent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,22 +34,34 @@ export default function Recipe() {
         }),
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch recipes');
+      const data = await response.json();
+      if (data.success && data.recipes) {
+        setIsLoading(false);
+        setResp(data.recipes);
+        console.log(data.recipes,"data- recieved")
+      }
+      else if (data.rawText) {
+        setIsLoading(false);
+        // Couldn't parse JSON, but got raw text
+        console.warn("Couldn't parse JSON. Raw text:", data.rawText);
+        return data.rawText;
+      } else {
+        throw new Error(data.error || "Unknown error");
       }
       
-      const jsonObject = await response.json();
-      console.log(jsonObject, "jsoooooon");
-      setResp(jsonObject);
+      
+      {/*setResp(data);*/}
+      return data.recipes;
     } catch (error) {
-      console.error("Error:", error);
-    } finally {
+      console.error("Error calling API:", error);
       setIsLoading(false);
+      return null;
     }
-    
-    console.log("Form submitted");
-    console.log(ingredients);
-    console.log(flexibility);
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    generateContent(ingredients,flexibility);
   }
 
   // const handleS = (event) => {
