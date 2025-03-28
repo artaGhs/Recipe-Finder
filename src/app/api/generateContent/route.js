@@ -6,8 +6,9 @@ export async function POST(request) {
   try {
     // Parse the request body
     const body = await request.json();
-    const { ingredients, flexibility } = body;
+    const { ingredients, flexibility,restrictions } = body;
     console.log("INGGG : ",ingredients, "   FLEX:  ", flexibility);
+    console.log("RESSSSSStrictionssss :     ", restrictions)
     // Initialize the Google Generative AI client
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     
@@ -19,17 +20,21 @@ export async function POST(request) {
     const formattedPrompt = `You are a professional chef, based on the user's ingredients, 
     find the best recipes, the input also includes a flexibilty % which means how 
     much new ingredients you can use. if 0%, you can only use the ingredients listed,
-    if 100% you can have a decent amount of variance. if there is no recpice found or
+    if 100% you can have a decent amount of variance. Also there is a restriction variable, make sure to 
+    exclude any recipes that include the restrictions, (eg, gluten)
+    if there is no recpice found or
     the input is not an actual ingredient, return "No recipes found based on the current restrictions:(". 
     You can consider that the user already has basic ingredients such as water, sugar, salt, etc. However if the flexibility is 0, don't assume that 
     the user has those ingredients!
+
     GIVE NO MORE THAN 15 RECIPES!
     YOUR OUTPUT SHOULD BE IN JSON FORMAT:
     Recipe = {'recipeName': string,'description': string, 'ingredients' : Array of strings, 'instructions' : string, 'servingSize' : string (ONLY IN APPROPRIATE UNITS, e.g 1 tblspoon,20 grams, 1 slice (for pizza)), 'caloriesPerServing': int}
     Return: Array<Recipe>
     USER INPUT{
       Ingredients: ${ingredients} / 
-      Flexibility: ${flexibility}
+      Flexibility: ${flexibility} /
+      Restrictions: ${restrictions}
     }
     `
     

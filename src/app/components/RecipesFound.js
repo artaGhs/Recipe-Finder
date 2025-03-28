@@ -74,7 +74,7 @@ export default function RecipesFound({json,loading}) {
 
       {showModal && setRecipeSelected && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          {/* Dark overlay behind the modal */}
+         
           <div
             className="absolute inset-0 bg-[rgba(0,0,0,0.1)] backdrop-blur-md"
             onClick={handleCloseMdl}

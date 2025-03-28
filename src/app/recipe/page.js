@@ -16,9 +16,10 @@ export default function Recipe() {
 
   const [ingredients, setIngredients] = useState('');
   const [flexibility , setFlexibility] = useState(0);
-  
+  const [restrictions, setRestrictions] = useState('');
+
   // Example client-side code to call this endpoint
-  async function generateContent( ingredients, flexibility) {
+  async function generateContent( ingredients, flexibility,restrictions) {
     setIsLoading(true);
     
     try {
@@ -30,7 +31,8 @@ export default function Recipe() {
         },
         body: JSON.stringify({
           ingredients,
-          flexibility
+          flexibility,
+          restrictions
         }),
       });
       
@@ -61,7 +63,7 @@ export default function Recipe() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    generateContent(ingredients,flexibility);
+    generateContent(ingredients,flexibility,restrictions);
   }
 
   // const handleS = (event) => {
@@ -86,6 +88,11 @@ export default function Recipe() {
 
             <label className="text-5xl flex justify-center mt-15 ">
               <input name="myInput"  value={ingredients} onChange={(e) => setIngredients(e.target.value)} className=" text-lg md:text-2xl lg:text-2xl  h-14 md:h-17 lg:h-17  w-9/10 md:w-6/10 lg:w-6/10 ring-amber-300 border-solid border-2 p-2focus:-translate-y-1 duration-200 focus:shadow-lg focus:shadow-amber-50/30 focus:outline-none rounded-2xl pl-5 -mt-10 mb-5 bg-[rgba(41,44,115,0.3)]  backdrop-brightness-200" placeholder="Flour, tomato, milk, etc." required/>
+              
+            </label>
+            <label className="text-5xl flex justify-center mt-15 ">
+              
+              <input name="myInput"  value={restrictions} onChange={(e) => setRestrictions(e.target.value)} className=" text-lg md:text-2xl lg:text-2xl  h-14 md:h-17 lg:h-17  w-9/10 md:w-6/10 lg:w-6/10 ring-amber-300 border-solid border-2 p-2focus:-translate-y-1 duration-200 focus:shadow-lg focus:shadow-amber-50/30 focus:outline-none rounded-2xl pl-5 -mt-10 mb-5 bg-[rgba(41,44,115,0.3)]  backdrop-brightness-200" placeholder="Enter any allergies, or restriction" required/>
               
             </label>
             <label className="text-3xl self-center ] text-center flex justify-center mt-10 mb-5" htmlFor="flexi">
