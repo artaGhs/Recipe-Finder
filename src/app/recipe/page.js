@@ -19,45 +19,58 @@ export default function Recipe() {
   const [restrictions, setRestrictions] = useState('');
 
   // Example client-side code to call this endpoint
-  async function generateContent( ingredients, flexibility,restrictions) {
+  async function generateContent(ingredients, flexibility, restrictions) {
     setIsLoading(true);
     
-    try {
-      console.log("testintttt")
-      const response = await fetch('/api/generateContent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ingredients,
-          flexibility,
-          restrictions
-        }),
-      });
-      
-      const data = await response.json();
-      if (data.success && data.recipes) {
-        setIsLoading(false);
-        setResp(data.recipes);
-        console.log(data.recipes,"data- recieved")
+    const maxRetries = 3;
+    let attempt = 0;
+    
+    while (attempt < maxRetries) {
+      try {
+        console.log(`Attempt ${attempt + 1} of ${maxRetries}`);
+        
+        const response = await fetch('/api/generateContent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ingredients,
+            flexibility,
+            restrictions
+          }),
+        });
+        
+        // Check if response is actually JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error(`Server returned ${response.status}. Please try again.`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.recipes) {
+          setIsLoading(false);
+          setResp(data.recipes);
+          console.log("Recipes received:", data.recipes);
+          return data.recipes;
+        } else if (data.error) {
+          throw new Error(data.error);
+        }
+        
+      } catch (error) {
+        console.error(`Attempt ${attempt + 1} failed:`, error);
+        attempt++;
+        
+        if (attempt >= maxRetries) {
+          setIsLoading(false);
+          alert(`Failed to get recipes after ${maxRetries} attempts. Please try again later.`);
+          return null;
+        }
+        
+        // Wait before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
-      else if (data.rawText) {
-        setIsLoading(false);
-        // Couldn't parse JSON, but got raw text
-        console.warn("Couldn't parse JSON. Raw text:", data.rawText);
-        return data.rawText;
-      } else {
-        throw new Error(data.error || "Unknown error");
-      }
-      
-      
-      {/*setResp(data);*/}
-      return data.recipes;
-    } catch (error) {
-      console.error("Error calling API:", error);
-      setIsLoading(false);
-      return null;
     }
   }
 

@@ -1,8 +1,15 @@
-
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
+  // Check API key exists
+  if (!process.env.API_KEY) {
+    console.error('Missing API_KEY environment variable');
+    return NextResponse.json({ 
+      error: 'Server configuration error' 
+    }, { status: 500 });
+  }
+
   try {
     // Parse the request body
     const body = await request.json();
@@ -14,29 +21,14 @@ export async function POST(request) {
     
     // Get the model
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.0-flash-lite",
     });
     // Format the prompt with the provided ingredients and flexibility
-    const formattedPrompt = `You are a professional chef, based on the user's ingredients, 
-    find the best recipes, the input also includes a flexibilty % which means how x 
-    much new ingredients you can use. if 0%, you can only use the ingredients listed,
-    if 100% you can have a decent amount of variance. Also there is a restriction variable, make sure to 
-    exclude any recipes that include the restrictions, (eg, gluten)
-    if there is no recpice found or
-    the input is not an actual ingredient, return "No recipes found based on the current restrictions:(". 
-    You can consider that the user already has basic ingredients such as water, sugar, salt, etc. However if the flexibility is 0, don't assume that 
-    the user has those ingredients!
-
-    GIVE NO MORE THAN 15 RECIPES!
-    YOUR OUTPUT SHOULD BE IN JSON FORMAT:
-    Recipe = {'recipeName': string,'description': string, 'ingredients' : Array of strings, 'instructions' : string, 'servingSize' : string (ONLY IN APPROPRIATE UNITS, e.g 1 tblspoon,20 grams, 1 slice (for pizza)), 'caloriesPerServing': int}
-    Return: Array<Recipe>
-    USER INPUT{
-      Ingredients: ${ingredients} / 
-      Flexibility: ${flexibility} /
-      Restrictions: ${restrictions}
-    }
-    `
+    const formattedPrompt = `Create max 10 recipes using: ${ingredients}. 
+    Flexibility: ${flexibility}% (0%=exact ingredients only, 100%=any ingredients).
+    Exclude: ${restrictions}.
+    Return only the EXACT JSON array of recipes, no other text.
+    JSON format: [{"recipeName":"","description":"","ingredients":[],"instructions":"","servingSize":"","caloriesPerServing":0}]`;
     
     // Generate content
     const result = await model.generateContent(formattedPrompt);
