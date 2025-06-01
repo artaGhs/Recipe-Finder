@@ -18,7 +18,7 @@ export async function POST(request) {
     });
     // Format the prompt with the provided ingredients and flexibility
     const formattedPrompt = `You are a professional chef, based on the user's ingredients, 
-    find the best recipes, the input also includes a flexibilty % which means how 
+    find the best recipes, the input also includes a flexibilty % which means how x 
     much new ingredients you can use. if 0%, you can only use the ingredients listed,
     if 100% you can have a decent amount of variance. Also there is a restriction variable, make sure to 
     exclude any recipes that include the restrictions, (eg, gluten)

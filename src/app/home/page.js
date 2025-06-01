@@ -6,7 +6,7 @@ import ModelViewer from "../components/ModelViewer";
 export default function Home() {
   return (
     <div className="flex flex-col min-h-[500vh] items-stretch   ">
-      <Header />
+      <Header/>
       <div className="fixed w-[100%] left-1/2  -translate-x-1/2  ">
 
         <div className="text-3xl md:text-5xl lg:text-5xl flex justify-center mt-45  w-full font-semibold  text-center">

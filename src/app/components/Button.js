@@ -5,7 +5,7 @@ export default function Button({text,style,btnType,bgColor="(55,48,163",opacity=
   return (
 
     <>
-      <button onClick={onclick} className={`rounded-2xl  text-3xl p-5  hover:cursor-pointer hover:-translate-y-0.5 duration-200 hover:shadow-black/50 hover:shadow-lg active:translate-y-0.5 active:shadow-none ${style}  `} 
+      <button onClick={onclick} className={`rounded-2xl  text-3xl p-5  hover:cursor-pointer hover:-translate-y-0.5 duration-200 hover:shadow-black/50 hover:shadow-lg active:translate-y-0.5 active:shadow-none ${style} select-none `} 
         type="submit"
         style={{background : `rgba${bgColor},${opacity})`,fontSize:textSize,border:border,padding:pd}}
       >
